@@ -189,7 +189,7 @@ class PostType extends RewritableRepository implements CoreRepository {
 		}
 		self::generateLabels( $labels );
 
-		self::$post_types[] = [ 'post_type' => $this->real_name, 'args' => $this->args ];
+		self::$post_types[$this->real_name] = [ 'post_type' => $this->real_name, 'args' => $this->args ];
 	}
 
 	/**

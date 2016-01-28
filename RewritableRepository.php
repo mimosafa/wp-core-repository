@@ -13,16 +13,6 @@ abstract class RewritableRepository {
 	protected static $post_types = [];
 	protected static $taxonomies = [];
 
-	protected static $builtinPostTypes = [
-		'post' => 'post',
-		'page' => 'page',
-	];
-
-	protected static $builtinTaxonomies = [
-		'category' => 'category',
-		'post_tag' => 'tag',
-	];
-
 	abstract public function regulation();
 
 	public static function init( $name, $args = [] ) {

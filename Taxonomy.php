@@ -156,7 +156,7 @@ class Taxonomy extends RewritableRepository implements CoreRepository {
 			$this->object_type_regulation();
 		}
 
-		self::$taxonomies[] = [ 'taxonomy' => $this->real_name, 'object_type' => $this->object_type, 'args' => $this->args ];
+		self::$taxonomies[$this->real_name] = [ 'taxonomy' => $this->real_name, 'object_type' => $this->object_type, 'args' => $this->args ];
 	}
 
 	private static function generateLabels( &$labels ) {
@@ -173,15 +173,15 @@ class Taxonomy extends RewritableRepository implements CoreRepository {
 
 	private function object_type_regulation() {
 		foreach ( $this->object_type as $i => $type ) {
-			if ( isset( self::$real_names[$type] ) ) {
+			if ( post_type_exists( $type ) || isset( self::$post_types[$type] ) ) {
 				continue;
 			}
-			if ( in_array( $type, self::$real_names, true ) ) {
-				$this->object_type[$i] = array_search( $type, self::$real_names, true );
-				continue;
-			}
-			if ( in_array( $type, self::$builtinPostTypes, true ) ) {
-				continue;
+			else if ( in_array( $type, self::$real_names, true ) ) {
+				$real_name = array_search( $type, self::$real_names, true );
+				if ( isset( self::$post_types[$real_name] ) ) {
+					$this->object_type[$i] = $real_name;
+					continue;
+				}
 			}
 			unset( $this->object_type[$i] );
 		}
@@ -200,4 +200,5 @@ class Taxonomy extends RewritableRepository implements CoreRepository {
 		}
 		return false;
 	}
+
 }
