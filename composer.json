@@ -1,0 +1,21 @@
+{
+    "name": "mimosafa/wp-core-repository",
+    "description": "WordPress post type, taxonomy registration helper.",
+    "keywords": ["WordPress", "wp", "post_type", "taxonomy"],
+    "type": "library",
+    "licence": "GPLv2+",
+    "require": {
+        "php": ">=5.4"
+    },
+    "authors": [
+        {
+            "name": "Toshimichi Mimoto",
+            "email": "mimosafa@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "mimosafa\\WP\\CoreRepository\\": ""
+        }
+    }
+}

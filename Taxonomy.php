@@ -165,7 +165,7 @@ class Taxonomy extends RewritableRepository implements CoreRepository {
 		foreach ( self::$label_formats as $key => $format ) {
 			if ( ! isset( $labels[$key] ) || ! filter_var( $labels[$key] ) ) {
 				if ( is_array( $format ) && ( $string = ${$format[0]} ) ) {
-					$labels[$key] = esc_html( sprintf( __( $format[1], 'wp-mimosafa-libs' ), $string ) );
+					$labels[$key] = esc_html( sprintf( __( $format[1], 'mimosafa-wp-core-repository' ), $string ) );
 				}
 			}
 		}
