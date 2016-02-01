@@ -23,7 +23,7 @@ class Taxonomy extends RewritableRepository implements CoreRepository {
 		'update_count_callback' => '',
 	];
 
-	private static $rewrite_defaults = [
+	protected static $rewrite_defaults = [
 		'slug'         => '',
 		'with_front'   => true,
 		'hierarchical' => false,

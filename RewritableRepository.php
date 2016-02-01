@@ -63,7 +63,33 @@ abstract class RewritableRepository {
 	}
 
 	public function __set( $name, $var ) {
-		$this->args[$name] = $var;
+		if ( substr( $name, 0, 8 ) === 'rewrite_' ) {
+			/**
+			 * Set rewrite arguments.
+			 */
+			$name = substr( $name, 8 );
+			if ( array_key_exists( $name, static::$rewrite_defaults ) ) {
+				if ( ! is_array( $this->args['rewrite'] ) ) {
+					$this->args['rewrite'] = [];
+				}
+				$this->args['rewrite'][$name] = $var;
+			}
+		}
+		else if ( substr( $name, 0, 6 ) === 'label_' ) {
+			/**
+			 * Set label arguments.
+			 */
+			$name = substr( $name, 6 );
+			if ( array_key_exists( $name, static::$label_formats ) ) {
+				if ( ! is_array( $this->args['labels'] ) ) {
+					$this->args['labels'] = [];
+				}
+				$this->args['labels'][$name] = $var;
+			}
+		}
+		else {
+			$this->args[$name] = $var;
+		}
 	}
 
 	public function register_taxonomies() {
