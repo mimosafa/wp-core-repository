@@ -29,7 +29,7 @@ class PostType extends RewritableRepository implements CoreRepository {
 		'delete_with_user'     => null,
 	];
 
-	private static $rewrite_defaults = [
+	protected static $rewrite_defaults = [
 		'slug'       => '',
 		'with_front' => true,
 		'pages'      => true,
@@ -61,6 +61,50 @@ class PostType extends RewritableRepository implements CoreRepository {
 		'items_list_navigation' => [ 'plural', '%s list navigation' ],
 		'items_list'            => [ 'plural', '%s list' ]
 	];
+
+	public function __set( $name, $var ) {
+		if ( substr( $name, 0, 8 ) === 'support_' ) {
+			/**
+			 * Set|Unset post type support.
+			 */
+			static $supports = [
+				'title',
+				'editor',
+				'author',
+				'thumbnail',
+				'excerpt',
+				'trackbacks',
+				'custom-fields',
+				'comments',
+				'revisions',
+				'page-attributes',
+				'post-formats'
+			];
+			$name = str_replace( '_', '-', substr( $name, 8 ) );
+			if ( in_array( $name, $supports, true ) ) {
+				if ( ! is_array( $this->args['supports'] ) ) {
+					if ( filter_var( $this->args['supports'], \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE ) === false ) {
+						$this->args['supports'] = [];
+					} else {
+						$this->args['supports'] = preg_split( '/[\s,]+/', $this->args['supports'] );
+					}
+				}
+				if ( $var === true && ! in_array( $name, $this->args['supports'], true ) ) {
+					$this->args['supports'][] = $name;
+				}
+				else if ( $var === false && in_array( $name, $this->args['supports'], true ) ) {
+					foreach ( $this->args['supports'] as $i => $support ) {
+						if ( $support === $name ) {
+							unset( $this->args['supports'][$i] );
+						}
+					}
+				}
+			}
+		}
+		else {
+			parent::__set( $name, $var );
+		}
+	}
 
 	public function regulation() {
 		if ( post_type_exists( $this->real_name ) ) {
