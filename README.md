@@ -37,4 +37,6 @@ $ composer install
 use mimosafa\WP\CoreRepository as cr;
 $factory = new cr\Factory();
 $product = $factory->create_post_type( 'product', 'public=1&has_archive=1' );
+$p_genre = $factory->create_taxonomy( 'genre', 'alias=product_genre&public=1' );
+$product->bind( $p_genre );
 ```

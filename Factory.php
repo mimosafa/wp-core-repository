@@ -33,7 +33,7 @@ class Factory {
 	 */
 	public function __construct( $context = null, $defaults = [] ) {
 		if ( $context ) {
-			if ( ! is_string( $context ) || @preg_match( '/[^a-z0-9_]/', $context ) ) {
+			if ( ! is_string( $context ) || ! @preg_match( '/\A[a-z][a-z_]*\z/', $context ) ) {
 				throw new \Exception( 'Invalid argument.' );
 			}
 			$this->prefix = rtrim( $context, '_' ) . '_';
