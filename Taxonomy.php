@@ -67,6 +67,56 @@ class Taxonomy extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
+	public function bind( $repository ) {
+		if ( is_array( $repository ) ) {
+			foreach ( $repository as $repo ) {
+				$this->bind( $repo );
+			}
+		}
+		else {
+			if ( ! is_object( $repository ) ) {
+				if ( $repository = PostType::instance( $repository ) ) { /* Post Type */ }
+				else { return; }
+			}
+			if ( $repository instanceof PostType ) {
+				$this->add_object_type( $repository->real_name );
+			}
+		}
+	}
+
+	public function unbind( $repository ) {
+		if ( is_array( $repository ) ) {
+			foreach ( $repository as $repo ) {
+				$this->unbind( $repo );
+			}
+		}
+		else {
+			if ( ! is_object( $repository ) ) {
+				if ( $repository = PostType::instance( $repository ) ) { /* Post Type */ }
+				else { return; }
+			}
+			if ( $repository instanceof PostType ) {
+				$this->remove_object_type( $repository->real_name );
+			}
+		}
+	}
+
+	public function add_object_type( $post_type ) {
+		if ( PostType::validateRealName( $post_type ) ) {
+			$this->object_type[] = $post_type;
+		}
+	}
+
+	public function remove_object_type( $post_type ) {
+		if ( is_string( $post_type ) && in_array( $post_type, $this->object_type ) ) {
+			foreach ( $this->object_type as $i => $object ) {
+				if ( $object === $post_type ) {
+					unset( $this->object_type[$i] );
+				}
+			}
+		}
+	}
+
 	public function regulation() {
 		if ( taxonomy_exists( $this->real_name ) ) {
 			return;
@@ -187,7 +237,7 @@ class Taxonomy extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
-	protected static function validateRealName( $str ) {
+	public static function validateRealName( $str ) {
 		if ( parent::validateRealName( $str ) ) {
 			/**
 			 * Taxonomy name regulation.

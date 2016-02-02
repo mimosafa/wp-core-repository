@@ -106,6 +106,40 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
+	public function bind( $repository ) {
+		if ( is_array( $repository ) ) {
+			foreach ( $repository as $repo ) {
+				$this->bind( $repo );
+			}
+		}
+		else {
+			if ( ! is_object( $repository ) ) {
+				if ( $repository = Taxonomy::instance( $repository ) ) { /* Taxonomy */ }
+				else { return; }
+			}
+			if ( $repository instanceof Taxonomy ) {
+				$repository->bind( $this );
+			}
+		}
+	}
+
+	public function unbind( $repository ) {
+		if ( is_array( $repository ) ) {
+			foreach ( $repository as $repo ) {
+				$this->unbind( $repo );
+			}
+		}
+		else {
+			if ( ! is_object( $repository ) ) {
+				if ( $repository = Taxonomy::instance( $repository ) ) { /* Taxonomy */ }
+				else { return; }
+			}
+			if ( $repository instanceof Taxonomy ) {
+				$repository->unbind( $this );
+			}
+		}
+	}
+
 	public function regulation() {
 		if ( post_type_exists( $this->real_name ) ) {
 			return;
@@ -256,7 +290,7 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
-	protected static function validateRealName( $str ) {
+	public static function validateRealName( $str ) {
 		return parent::validateRealName( $str ) && strlen( $str ) < 21;
 	}
 

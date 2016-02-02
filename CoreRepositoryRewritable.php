@@ -26,7 +26,12 @@ abstract class CoreRepositoryRewritable {
 	}
 
 	public static function instance( $name ) {
-		return isset( self::$instances[$name] ) ? self::$instances[$name] : null;
+		if ( isset( self::$instances[$name] ) ) {
+			return self::$instances[$name];
+		}
+		if ( isset( self::$real_names[$name] ) ) {
+			return self::$instances[self::$real_names[$name]];
+		}
 	}
 
 	/**
@@ -34,7 +39,10 @@ abstract class CoreRepositoryRewritable {
 	 */
 	protected function __construct( $name, $args = [] ) {
 		if ( ! static::validateName( $name ) ) {
-			throw new \Exception( 'Invalid.' );
+			throw new \Exception( 'Invalid name parameter.' );
+		}
+		if ( isset( self::$real_names[$name] ) ) {
+			throw new \Exception( "The name \"{$name}\" is already used as existing repository's alias." );
 		}
 		$args = wp_parse_args( $args, static::$defaults );
 		if ( isset( $args['alias'] ) ) {
@@ -44,7 +52,10 @@ abstract class CoreRepositoryRewritable {
 			$real_name = $name;
 		}
 		if ( ! static::validateRealName( $real_name ) ) {
-			throw new \Exception( 'Invalid.' );
+			throw new \Exception( 'Invalid alias parameter.' );
+		}
+		if ( in_array( $real_name, self::$real_names, true ) ) {
+			throw new \Exception( "The alias \"{$real_name}\" is already used as existing repository's name." );
 		}
 		$this->name = $name;
 		$this->real_name = $real_name;
@@ -89,6 +100,12 @@ abstract class CoreRepositoryRewritable {
 		}
 		else {
 			$this->args[$name] = $var;
+		}
+	}
+
+	public function __get( $name ) {
+		if ( in_array( $name, [ 'name', 'real_name' ] ) ) {
+			return $this->{$name};
 		}
 	}
 
@@ -177,17 +194,11 @@ abstract class CoreRepositoryRewritable {
 		}
 	}
 
-	protected static function validateName( $str ) {
-		if ( isset( self::$real_names[$str] ) ) {
-			throw new \Exception( "The repository name \"{$str}\" is already used as existing repository's real name." );
-		}
+	public static function validateName( $str ) {
 		return is_string( $str ) && @preg_match( '/[a-z]+[a-z0-9_\-]+/', $str );
 	}
 
-	protected static function validateRealName( $str ) {
-		if ( in_array( $str, self::$real_names, true ) ) {
-			throw new \Exception( "The repository real name \"{$str}\" is already used as existing repository's name." );
-		}
+	public static function validateRealName( $str ) {
 		return self::validateName( $str );
 	}
 
