@@ -1,7 +1,7 @@
 <?php
 namespace mimosafa\WP\CoreRepository;
 
-class Taxonomy extends RewritableRepository implements CoreRepository {
+class Taxonomy extends CoreRepositoryRewritable implements CoreRepository {
 
 	protected $object_type = [];
 

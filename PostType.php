@@ -1,7 +1,7 @@
 <?php
 namespace mimosafa\WP\CoreRepository;
 
-class PostType extends RewritableRepository implements CoreRepository {
+class PostType extends CoreRepositoryRewritable implements CoreRepository {
 
 	protected static $defaults = [
 		'labels'               => [],

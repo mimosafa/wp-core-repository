@@ -1,7 +1,7 @@
 <?php
 namespace mimosafa\WP\CoreRepository;
 
-abstract class RewritableRepository {
+abstract class CoreRepositoryRewritable {
 
 	protected $name;
 	protected $real_name;
