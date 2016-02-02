@@ -1,31 +1,84 @@
 <?php
 namespace mimosafa\WP\CoreRepository;
-
+/**
+ * WordPress core repository class factory.
+ *
+ * @access public
+ *
+ * @author Toshimichi Mimoto <mimosafa@gmail.com>
+ */
 class Factory {
 
+	/**
+	 * Repository real name prefix.
+	 *
+	 * @var string
+	 */
 	private $prefix = '';
 
-	public function __construct( $context = '' ) {
+	/**
+	 * Default arguments.
+	 *
+	 * @var array
+	 */
+	private $defaults;
+
+	/**
+	 * Constructor.
+	 *
+	 * @access public
+	 *
+	 * @param  string       $context
+	 * @param  array|string $defaults
+	 */
+	public function __construct( $context = null, $defaults = [] ) {
 		if ( $context ) {
 			if ( ! is_string( $context ) || @preg_match( '/[^a-z0-9_]/', $context ) ) {
 				throw new \Exception( 'Invalid argument.' );
 			}
 			$this->prefix = rtrim( $context, '_' ) . '_';
 		}
+		if ( $defaults ) {
+			$this->defaults = wp_parse_args( $defaults );
+		}
 	}
 
+	/**
+	 * Create post type repository class.
+	 *
+	 * @access public
+	 *
+	 * @param  string       $name
+	 * @param  array|string $args
+	 */
 	public function create_post_type( $name, $args = [] ) {
-		$this->real_name( $name, $args );
+		$this->arguments( $name, $args );
 		return PostType::init( $name, $args );
 	}
 
+	/**
+	 * Create taxonomy repository class.
+	 *
+	 * @access public
+	 *
+	 * @param  string       $name
+	 * @param  array|string $args
+	 */
 	public function create_taxonomy( $name, $args = [] ) {
-		$this->real_name( $name, $args );
+		$this->arguments( $name, $args );
 		return Taxonomy::init( $name, $args );
 	}
 
-	private function real_name( $name, &$args ) {
-		$args = wp_parse_args( $args );
+	/**
+	 * Merge default arguments & create repository real name.
+	 *
+	 * @access private
+	 *
+	 * @param  string $name
+	 * @param  array  &$args
+	 */
+	private function arguments( $name, &$args ) {
+		$args = wp_parse_args( $args, $this->defaults );
 		if ( ! isset( $args['alias'] ) || ! filter_var( $args['alias'] ) ) {
 			$args['alias'] = $name;
 		}
