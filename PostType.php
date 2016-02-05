@@ -106,7 +106,7 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
-	public function bind( $repository ) {
+	public function bind( $repository, $arg = null ) {
 		if ( is_array( $repository ) ) {
 			foreach ( $repository as $repo ) {
 				$this->bind( $repo );
@@ -123,7 +123,7 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 		}
 	}
 
-	public function unbind( $repository ) {
+	public function unbind( $repository, $arg = null ) {
 		if ( is_array( $repository ) ) {
 			foreach ( $repository as $repo ) {
 				$this->unbind( $repo );

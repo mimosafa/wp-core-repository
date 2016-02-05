@@ -21,7 +21,7 @@ class Factory {
 	 *
 	 * @var array
 	 */
-	private $defaults;
+	private $defaults = [];
 
 	/**
 	 * Constructor.
@@ -41,6 +41,14 @@ class Factory {
 		if ( $defaults ) {
 			$this->defaults = wp_parse_args( $defaults );
 		}
+	}
+
+	public function set_defaults( $defaults ) {
+		$this->defaults = wp_parse_args( $defaults, $this->defaults );
+	}
+
+	public function reset_defaults( $defaults = [] ) {
+		$this->defaults = wp_parse_args( $defaults );
 	}
 
 	/**
