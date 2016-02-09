@@ -71,6 +71,10 @@ abstract class CoreRepositoryRewritable {
 			add_action( 'init', [ $this, 'register_taxonomies' ], 1 );
 			$done = true;
 		}
+
+		if ( method_exists( $this, 'hooks' ) ) {
+			$this->hooks();
+		}
 	}
 
 	public function __set( $name, $var ) {

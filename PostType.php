@@ -3,6 +3,8 @@ namespace mimosafa\WP\CoreRepository;
 
 class PostType extends CoreRepositoryRewritable implements CoreRepository {
 
+	protected $values = [];
+
 	protected static $defaults = [
 		'labels'               => [],
 		'description'          => '',
@@ -138,6 +140,44 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 				$repository->unbind( $this );
 			}
 		}
+	}
+
+	public function register_metadata( $name, $args = [] ) {
+		if ( ! filter_var( $name ) || $name !== sanitize_key( $name ) ) {
+			throw new \Exception( 'Invalid.' );
+		}
+		static $defaults = [
+			'labels'      => [],
+			'description' => '',
+			'callback'    => null,
+			'sanitize'    => null,
+			# 'permission' => '0744',
+		];
+		static $label_formats = [
+			'name'          => null,
+			'singular_name' => null,
+		];
+		$args = wp_parse_args( $args, $defaults );
+
+		if ( ! is_array( $args['labels'] ) ) {
+			$args['labels'] = [];
+		}
+		if ( ! isset( $args['labels']['name'] ) || filter_var( $args['labels']['name'] ) ) {
+			$args['labels']['name'] = self::labelize( $name );
+		}
+		if ( ! isset( $args['labels']['singular_name'] ) || filter_var( $args['labels']['singular_name'] ) ) {
+			$args['labels']['singular_name'] = $args['labels']['name'];
+		}
+		if ( is_array( $args['description'] ) || is_object( $args['description'] ) ) {
+			$args['description'] = '';
+		}
+		if ( isset( $args['callback'] ) && is_callable( $args['callback'] ) ) {
+			$args['callback'] = null;
+		}
+		if ( isset( $args['sanitize'] ) && is_callable( $args['sanitize'] ) ) {
+			$args['sanitize'] = null;
+		}
+		$this->values[$name] = array_merge( $args, [ 'name' => $name, 'value_type' => 'metadata' ] );
 	}
 
 	public function regulation() {
@@ -292,6 +332,24 @@ class PostType extends CoreRepositoryRewritable implements CoreRepository {
 
 	public static function validateRealName( $str ) {
 		return parent::validateRealName( $str ) && strlen( $str ) < 21;
+	}
+
+	protected function hooks() {
+		if ( is_admin() ) {
+			add_action( 'add_meta_boxes_' . $this->real_name, [ $this, 'add_meta_boxes' ] );
+		}
+	}
+
+	public function add_meta_boxes() {
+		if ( $this->prepare_meta_boxes() ) {
+			//
+		}
+	}
+
+	private function prepare_meta_boxes() {
+		if ( ! $this->values ) {
+			return false;
+		}
 	}
 
 }
